@@ -13,6 +13,10 @@ namespace Tool
 		private BrowserForm? browser;
 		private bool updating = false;
 		private AppSettings settings;
+		private const int HOTKEY_ID = 9000;
+		private const int MOD_CONTROL = 0x0002;
+		private const int MOD_ALT = 0x0001;
+		private const int VK_W = 0x57;
 
 		public MainForm()
 		{
@@ -29,6 +33,8 @@ namespace Tool
 			numHeight.MouseWheel += Numeric_MouseWheel;
 			chkHideBorder.CheckedChanged += (_, __) => browser?.SetChromeVisible(!chkHideBorder.Checked);
 			this.FormClosing += MainForm_FormClosing;
+			this.Load += MainForm_Load;
+			this.FormClosed += MainForm_FormClosed;
 		}
 
 		private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
@@ -154,6 +160,74 @@ namespace Tool
 			if (browser != null && !browser.IsDisposed) browser.Close();
 			browser = null;
 		}
+
+		private void btnCircle_Click(object? sender, EventArgs e)
+		{
+			if (browser == null || browser.IsDisposed)
+			{
+				MessageBox.Show(this, "请先打开浏览器窗口", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+			try
+			{
+				browser.ToggleCircleOverlay();
+				UpdateCircleButtonText(browser.IsCircleActive);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(this, "切换圆圈失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		public void UpdateCircleButtonText(bool isActive)
+		{
+			btnCircle.Text = isActive ? "取消圆圈" : "圆圈展示";
+			btnCircle.Invalidate();
+		}
+
+		private void MainForm_Load(object? sender, EventArgs e)
+		{
+			// Register global hotkey Ctrl+Alt+W
+			RegisterHotKey(this.Handle, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_W);
+		}
+
+		private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
+		{
+			// Unregister global hotkey
+			UnregisterHotKey(this.Handle, HOTKEY_ID);
+		}
+
+		protected override void WndProc(ref Message m)
+		{
+			const int WM_HOTKEY = 0x0312;
+			if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == HOTKEY_ID)
+			{
+				ToggleWindowsVisibility();
+			}
+			base.WndProc(ref m);
+		}
+
+		private void ToggleWindowsVisibility()
+		{
+			// Only toggle browser window if it exists
+			if (browser != null && !browser.IsDisposed)
+			{
+				bool browserVisible = browser.Visible;
+				browser.Visible = !browserVisible;
+				if (!browserVisible)
+				{
+					browser.WindowState = FormWindowState.Normal;
+					browser.BringToFront();
+					browser.Activate();
+				}
+			}
+		}
+
+		[DllImport("user32.dll")]
+		private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
+
+		[DllImport("user32.dll")]
+		private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
 		private void trackOpacity_ValueChanged(object? sender, EventArgs e)
 		{

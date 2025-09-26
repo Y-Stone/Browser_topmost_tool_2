@@ -41,6 +41,7 @@ namespace Tool
 			this.groupUrl = new System.Windows.Forms.GroupBox();
 			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.panelButtons = new System.Windows.Forms.Panel();
+			this.btnCircle = new System.Windows.Forms.Button();
 			this.btnOpen = new System.Windows.Forms.Button();
 			this.btnClose = new System.Windows.Forms.Button();
 			this.btnSave = new System.Windows.Forms.Button();
@@ -222,6 +223,17 @@ namespace Tool
 			this.panelButtons.Size = new System.Drawing.Size(376, 36);
 			this.panelButtons.TabIndex = 3;
 			// 
+			// btnCircle
+			// 
+			this.btnCircle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCircle.Location = new System.Drawing.Point(10, 6);
+			this.btnCircle.Name = "btnCircle";
+			this.btnCircle.Size = new System.Drawing.Size(84, 28);
+			this.btnCircle.TabIndex = 0;
+			this.btnCircle.Text = "圆圈展示";
+			this.btnCircle.UseVisualStyleBackColor = true;
+			this.btnCircle.Click += new System.EventHandler(this.btnCircle_Click);
+			// 
 			// btnOpen
 			// 
 			this.btnOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -256,6 +268,7 @@ namespace Tool
 			this.btnSave.UseVisualStyleBackColor = true;
 			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// add buttons to panel after init
+			this.panelButtons.Controls.Add(this.btnCircle);
 			this.panelButtons.Controls.Add(this.btnSave);
 			this.panelButtons.Controls.Add(this.btnOpen);
 			this.panelButtons.Controls.Add(this.btnClose);
@@ -305,6 +318,7 @@ namespace Tool
 		private GroupBox groupUrl;
 		private TextBox txtUrl;
 		private Panel panelButtons;
+		private Button btnCircle;
 		private Button btnOpen;
 		private Button btnClose;
 		private Button btnSave;
